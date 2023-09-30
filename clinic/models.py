@@ -12,20 +12,15 @@ class UserProfile(models.Model):
         related_name='user_profile',
         null=True
     )
-    role = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        related_name='role',
-        null=True
-    )
+    role = models.CharField(max_length=30, null=True)
     password = models.CharField(max_length=150, null=True)
     mobile = models.CharField(max_length=20, null=True)
     national_code = models.CharField(max_length=15, null=True)
     province = models.CharField(max_length=30, null=True)
     city = models.CharField(max_length=30, null=True)
 
-    def __str__(self):
-        return self.national_code
+    def __str__(self, *args, **kwargs):
+        super(UserProfile, self).save(*args, **kwargs)
 
 
 class Reception(models.Model):
@@ -40,8 +35,8 @@ class Reception(models.Model):
     )
     in_use = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.title
+    def __str__(self, *args, **kwargs):
+        super(Reception, self).save(*args, **kwargs)
 
 
 class UserReception(models.Model):
@@ -57,8 +52,8 @@ class UserReception(models.Model):
     )
     reason = models.TextField(null=True)
 
-    def __str__(self):
-        return self.reception.title
+    def __str__(self, *args, **kwargs):
+        super(UserReception, self).save(*args, **kwargs)
 
 
 class Visit(models.Model):
@@ -69,5 +64,5 @@ class Visit(models.Model):
     )
     result = models.TextField(null=True)
 
-    def __str__(self):
-        return self.reception.reception_id
+    def __str__(self, *args, **kwargs):
+        super(Visit, self).save(*args, **kwargs)

@@ -1,6 +1,7 @@
 import requests
 from django.forms import model_to_dict
 from django.shortcuts import render
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import permission_classes, api_view, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.models import User, Group
@@ -63,25 +64,25 @@ def log_out(request):
     try:
         user_profile = UserProfile.objects.get(mobile__exact=mobile)
         if user_profile:
-            return Response(data={"You Are Loged Out!"}, status=status.HTTP_200_OK)
+            return Response(data={"You Are Logged Out!"}, status=status.HTTP_200_OK)
     except UserProfile.DoesNotExist:
         return Response(data={"You Are Not Authenticated"}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(["POST"])
-@authentication_classes([IsAuthenticated])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAdmin])
 def set_group(request):
     try:
-        print('req: ', request.GET['user_id'])
-        user_id = request.data['user_id']
+        users_id = request.data['user_id']
         group_id = request.data['group_id']
 
-        user = UserProfile.objects.get(id=user_id)
-        role = Group.objects.get(id__exact=group_id)
-        user.role = role
-        user.save()
-        return Response(data=model_to_dict(user), status=status.HTTP_200_OK)
+        for id in users_id:
+            user = UserProfile.objects.get(id=id)
+            role = Group.objects.get(id__exact=group_id)
+            user.role = role
+            user.save()
+            return Response(data=model_to_dict(user), status=status.HTTP_200_OK)
     except UserProfile.DoesNotExist:
         return Response(status=status.HTTP_200_OK)
 
