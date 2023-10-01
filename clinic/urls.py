@@ -1,5 +1,7 @@
 from rest_framework import routers
 from django.urls import path, include
+from rest_framework.authtoken.views import obtain_auth_token
+
 from clinic import views
 
 router = routers.DefaultRouter()
@@ -11,7 +13,6 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),
     path('log_out/', views.log_out, name='log_out'),
-    path('set_group/', views.set_group, name='set_group'),
-    # path('set_visit/', views.set_visit, name='set_visit'),
     path('api/', include(router.urls)),
+    path('api/token-auth/', obtain_auth_token),
 ]

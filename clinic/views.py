@@ -1,16 +1,10 @@
-import requests
-from django.forms import model_to_dict
-from django.shortcuts import render
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
 from rest_framework.decorators import permission_classes, api_view, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status, viewsets
-
-# Create your views here.
 from rest_framework.throttling import UserRateThrottle
-
 from clinic.models import UserProfile, Reception, UserReception, Visit
 from .permissions import IsAdmin, IsOperator, IsDoctor
 from .serializers import UserReceptionSerializer, ReceptionSerializer, VisitSerializer
@@ -69,22 +63,22 @@ def log_out(request):
         return Response(data={"You Are Not Authenticated"}, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(["POST"])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAdmin])
-def set_group(request):
-    try:
-        users_id = request.data['user_id']
-        group_id = request.data['group_id']
-
-        for id in users_id:
-            user = UserProfile.objects.get(id=id)
-            role = Group.objects.get(id__exact=group_id)
-            user.role = role
-            user.save()
-            return Response(data=model_to_dict(user), status=status.HTTP_200_OK)
-    except UserProfile.DoesNotExist:
-        return Response(status=status.HTTP_200_OK)
+# @api_view(["POST"])
+# @authentication_classes([SessionAuthentication, BasicAuthentication])
+# @permission_classes([IsAdmin])
+# def set_group(request):
+#     try:
+#         users_id = request.data['user_id']
+#         group_id = request.data['group_id']
+#
+#         for id in users_id:
+#             user = UserProfile.objects.get(id=id)
+#             role = Group.objects.get(id__exact=group_id)
+#             user.role = role
+#             user.save()
+#             return Response(data=model_to_dict(user), status=status.HTTP_200_OK)
+#     except UserProfile.DoesNotExist:
+#         return Response(status=status.HTTP_200_OK)
 
 
 class ReceptionViewSet(viewsets.ModelViewSet):
