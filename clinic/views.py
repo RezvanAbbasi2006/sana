@@ -8,6 +8,7 @@ from rest_framework.throttling import UserRateThrottle
 from clinic.models import UserProfile, Reception, UserReception, Visit
 from .permissions import IsAdmin, IsOperator, IsDoctor
 from .serializers import UserReceptionSerializer, ReceptionSerializer, VisitSerializer
+from rest_framework.authtoken.models import Token
 
 
 @api_view(["POST"])
@@ -30,6 +31,7 @@ def register(request):
         user.save()
         userprofile.user_id = user.id
         userprofile.save()
+        Token.objects.create(user=user)
         return Response({"Profile Created!"}, status=status.HTTP_201_CREATED)
     else:
         return Response({"is_user": False}, status=status.HTTP_401_UNAUTHORIZED)

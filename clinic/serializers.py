@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from clinic.models import Reception, UserProfile, UserReception, Visit
 
 
