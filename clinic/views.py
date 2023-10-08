@@ -37,7 +37,7 @@ def register(request):
         return Response({"is_user": False}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def login(request):
     mobile = request.data["mobile"]
