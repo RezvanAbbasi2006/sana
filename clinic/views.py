@@ -1,4 +1,4 @@
-
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import permission_classes, api_view, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.models import User
@@ -52,9 +52,9 @@ def login(request):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-@api_view(["GET"])
-@authentication_classes([IsAuthenticated])
-@permission_classes([AllowAny])
+@api_view(["POST"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def log_out(request):
     mobile = request.data["mobile"]
     try:
@@ -63,24 +63,6 @@ def log_out(request):
             return Response(data={"You Are Logged Out!"}, status=status.HTTP_200_OK)
     except UserProfile.DoesNotExist:
         return Response(data={"You Are Not Authenticated"}, status=status.HTTP_404_NOT_FOUND)
-
-
-# @api_view(["POST"])
-# @authentication_classes([SessionAuthentication, BasicAuthentication])
-# @permission_classes([IsAdmin])
-# def set_group(request):
-#     try:
-#         users_id = request.data['user_id']
-#         group_id = request.data['group_id']
-#
-#         for id in users_id:
-#             user = UserProfile.objects.get(id=id)
-#             role = Group.objects.get(id__exact=group_id)
-#             user.role = role
-#             user.save()
-#             return Response(data=model_to_dict(user), status=status.HTTP_200_OK)
-#     except UserProfile.DoesNotExist:
-#         return Response(status=status.HTTP_200_OK)
 
 
 class ReceptionViewSet(viewsets.ModelViewSet):
