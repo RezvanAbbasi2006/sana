@@ -69,13 +69,15 @@ class ReceptionViewSet(viewsets.ModelViewSet):
     queryset = UserReception.objects.all()
     serializer_class = ReceptionSerializer
     throttle_classes = [UserRateThrottle]
-    authentication_classes = [IsAuthenticated]
-    permission_classes = [IsAdmin, IsOperator]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        serializer = self.serializer_class(request.data)
-        serializer.create(request.data)
-        return Response(data={"Reception Created!"}, status=status.HTTP_200_OK)
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            print("SER DATA   :", serializer.data)
+            serializer.create(request.data)
+            return Response(data={"Reception Created!"}, status=status.HTTP_200_OK)
+        return Response(data={"Enter Correct data!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserReceptionViewSet(viewsets.ModelViewSet):

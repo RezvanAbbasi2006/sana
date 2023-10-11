@@ -11,15 +11,17 @@ class ReceptionSerializer(serializers.ModelSerializer):
         title = validated_data['title']
         date = validated_data['date']
         time = validated_data['time']
-        profile_id = validated_data['profile_id']
+        mobile = validated_data['mobile']
+        doctor = validated_data['doctor']
 
-        profile = UserProfile.objects.get(id__exact=profile_id)
+        patient = UserProfile.objects.get(mobile__exact=mobile)
 
         reception = Reception(
+            doctor=doctor,
             title=title,
             date=date,
             time=time,
-            doctor=profile
+            patient=patient
         )
         reception.save()
         return reception

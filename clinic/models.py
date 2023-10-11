@@ -21,10 +21,11 @@ class UserProfile(models.Model):
 
 
 class Reception(models.Model):
+    doctor = models.CharField(max_length=50, null=True)
     title = models.CharField(max_length=50, null=True)
     date = models.CharField(max_length=50, null=True)
     time = models.CharField(max_length=50, null=True)
-    doctor = models.ForeignKey(
+    patient = models.ForeignKey(
         UserProfile,
         on_delete=models.CASCADE,
         related_name='reception',
