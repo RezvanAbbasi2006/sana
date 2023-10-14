@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from clinic.models import Reception, UserProfile, UserReception, Visit
+from clinic.models import Reception, UserProfile, Visit
 
 
 class ReceptionSerializer(serializers.ModelSerializer):
@@ -26,28 +26,6 @@ class ReceptionSerializer(serializers.ModelSerializer):
         reception.save()
         return reception
 
-
-class UserReceptionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserReception
-        fields = '__all__'
-
-    def create(self, instance, **validated_data):
-        user_id = validated_data['validated_data']['user_id']
-        user = UserProfile.objects.get(id=user_id)
-
-        if not instance.in_use:
-            user_reception = UserReception(
-                user=user,
-                reception=instance
-            )
-            user_reception.save()
-            instance.in_use = True
-            instance.save()
-            return user_reception
-        else:
-            return "Reception In Use!"
-
     def list(self, **validated_data):
         return validated_data
 
@@ -59,7 +37,7 @@ class VisitSerializer(serializers.ModelSerializer):
 
     def create(self, **validated_data):
         reception_id = validated_data['validated_data']['reception_id']
-        reception = UserReception.objects.get(id=reception_id)
+        reception = Reception.objects.get(id=int(reception_id))
         result = validated_data['validated_data']['result']
 
         visit = Visit(
@@ -68,3 +46,6 @@ class VisitSerializer(serializers.ModelSerializer):
         )
         visit.save()
         return visit
+
+    def list(self, **validated_data):
+        return validated_data

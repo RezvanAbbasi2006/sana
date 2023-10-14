@@ -4,7 +4,6 @@ from clinic import views
 
 router = routers.DefaultRouter()
 router.register('reception', views.ReceptionViewSet, basename='reception')
-router.register('user_reception', views.UserReceptionViewSet, basename='user_reception')
 router.register('visit', views.VisitViewSet, basename='visit')
 
 urlpatterns = [

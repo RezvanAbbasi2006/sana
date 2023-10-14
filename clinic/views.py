@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.throttling import UserRateThrottle
-from clinic.models import UserProfile, Reception, UserReception, Visit
-from .permissions import IsAdmin, IsOperator, IsDoctor
-from .serializers import UserReceptionSerializer, ReceptionSerializer, VisitSerializer
+from clinic.models import UserProfile, Reception, Visit
+from .permissions import IsDoctor
+from .serializers import ReceptionSerializer, VisitSerializer
 from rest_framework.authtoken.models import Token
 
 
@@ -66,7 +66,7 @@ def log_out(request):
 
 
 class ReceptionViewSet(viewsets.ModelViewSet):
-    queryset = UserReception.objects.all()
+    queryset = Reception.objects.all()
     serializer_class = ReceptionSerializer
     throttle_classes = [UserRateThrottle]
     permission_classes = [IsAuthenticated]
@@ -74,30 +74,13 @@ class ReceptionViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            print("SER DATA   :", serializer.data)
             serializer.create(request.data)
             return Response(data={"Reception Created!"}, status=status.HTTP_200_OK)
         return Response(data={"Enter Correct data!"}, status=status.HTTP_400_BAD_REQUEST)
 
-
-class UserReceptionViewSet(viewsets.ModelViewSet):
-    serializer_class = UserReceptionSerializer
-    queryset = Reception.objects.all()
-    authentication_classes = [IsAuthenticated]
-
-    def create(self, request, *args, **kwargs):
-        reception_id = request.data['reception_id']
-        reception = self.queryset.get(id__exact=reception_id)
-        serializer = self.serializer_class(instance=reception, data=request.data)
-
-        if serializer.is_valid():
-            serializer.create(instance=reception, validated_data=request.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(data=serializer.data, status=status.HTTP_400_BAD_REQUEST)
-
     def list(self, request, *args, **kwargs):
-        user_id = request.data['user_id']
-        query_set = UserReception.objects.filter(user_id=user_id).all()
+        user_id = request.user.id
+        query_set = Reception.objects.filter(patient_id=user_id).all()
         serializer = self.serializer_class(data=query_set, many=True)
         if serializer.is_valid():
             serializer.list(validated_data=request.data)
@@ -108,13 +91,20 @@ class UserReceptionViewSet(viewsets.ModelViewSet):
 class VisitViewSet(viewsets.ModelViewSet):
     serializer_class = VisitSerializer
     queryset = Visit.objects.all()
-    permission_classes = [IsDoctor]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        reception_id = request.data['reception_id']
-        reception = UserReception.objects.get(id=reception_id)
-        serializer = self.serializer_class(instance=reception, data=request.data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.create(validated_data=request.data)
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data={"Dont Created"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def list(self, request, *args, **kwargs):
+        reception_id = request.data['reception_id']
+        reception = Reception.objects.get(id=reception_id)
+        serializer = self.serializer_class(instance=reception)
+        if serializer.is_valid():
+            serializer.list(validated_data=request.data)
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(data={"Dont Created"}, status=status.HTTP_400_BAD_REQUEST)

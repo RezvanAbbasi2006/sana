@@ -37,26 +37,9 @@ class Reception(models.Model):
         super(Reception, self).save(*args, **kwargs)
 
 
-class UserReception(models.Model):
-    user = models.ForeignKey(
-        UserProfile,
-        on_delete=models.CASCADE,
-        related_name='user_reception'
-    )
-    reception = models.ForeignKey(
-        Reception,
-        on_delete=models.CASCADE,
-        related_name='user_reception'
-    )
-    reason = models.TextField(null=True)
-
-    def __str__(self, *args, **kwargs):
-        super(UserReception, self).save(*args, **kwargs)
-
-
 class Visit(models.Model):
     reception = models.OneToOneField(
-        UserReception,
+        Reception,
         on_delete=models.CASCADE,
         null=True
     )
