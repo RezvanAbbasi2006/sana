@@ -16,12 +16,16 @@ class UserProfile(models.Model):
     province = models.CharField(max_length=30, null=True)
     city = models.CharField(max_length=30, null=True)
 
-    def __str__(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
 
 
 class Reception(models.Model):
-    doctor = models.CharField(max_length=50, null=True)
+    doctor = models.ForeignKey(
+        UserProfile,
+        related_name='doctor',
+        on_delete=models.CASCADE
+    )
     title = models.CharField(max_length=50, null=True)
     date = models.CharField(max_length=50, null=True)
     time = models.CharField(max_length=50, null=True)
