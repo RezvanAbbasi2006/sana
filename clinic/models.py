@@ -24,21 +24,34 @@ class Reception(models.Model):
     doctor = models.ForeignKey(
         UserProfile,
         related_name='doctor',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True
     )
     title = models.CharField(max_length=50, null=True)
-    date = models.CharField(max_length=50, null=True)
-    time = models.CharField(max_length=50, null=True)
-    patient = models.ForeignKey(
-        UserProfile,
+    time = models.DateTimeField(auto_now=True, null=True)
+    in_use = models.BooleanField(default=False, null=True)
+
+    def save(self, *args, **kwargs):
+        super(Reception, self).save(*args, **kwargs)
+
+
+class ReserveReception(models.Model):
+    reception = models.ForeignKey(
+        Reception,
         on_delete=models.CASCADE,
         related_name='reception',
         null=True
     )
-    in_use = models.BooleanField(default=False)
+    patient = models.ForeignKey(
+        UserProfile,
+        on_delete=models.CASCADE,
+        related_name='patient',
+        null=True
+    )
+    is_available = models.BooleanField(default=True, null=True)
 
-    def __str__(self, *args, **kwargs):
-        super(Reception, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        super(ReserveReception, self).save(*args, **kwargs)
 
 
 class Visit(models.Model):
@@ -49,5 +62,5 @@ class Visit(models.Model):
     )
     result = models.TextField(null=True)
 
-    def __str__(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         super(Visit, self).save(*args, **kwargs)
